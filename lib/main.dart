@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: SearchPage(),
     );
   }
@@ -99,6 +99,15 @@ class _SearchPageState extends State<SearchPage> {
 
   List<Movie> movies = List.from(moviesList);
 
+  void search(String value) {
+    setState(() {
+      movies = moviesList
+          .where((element) =>
+              element.title!.toLowerCase().contains(value.toLowerCase()))
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,7 +116,7 @@ class _SearchPageState extends State<SearchPage> {
         backgroundColor: const Color(0xFF290baf),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,11 +132,12 @@ class _SearchPageState extends State<SearchPage> {
               height: 20,
             ),
             TextField(
+              onChanged: (value) => search(value),
               decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.search),
                   prefixIconColor: Colors.white,
                   filled: true,
-                  fillColor: Color(0xff302360),
+                  fillColor: const Color(0xff302360),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide.none),
@@ -137,21 +147,31 @@ class _SearchPageState extends State<SearchPage> {
               height: 20,
             ),
             Expanded(
-                child: ListView.builder(
-                    itemCount: movies.length,
-                    itemBuilder: (context, index) => ListTile(
-                          contentPadding: const EdgeInsets.all(8),
-                          title: Text(
-                            movies[index].title!,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                          subtitle: Text("${movies[index].releaseYear}"),
-                          trailing: Text("${movies[index].rating}"),
-                          leading: Image.network(movies[index].url!),
-                        )))
+                child: movies.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "No result found!",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: movies.length,
+                        itemBuilder: (context, index) => ListTile(
+                              contentPadding: const EdgeInsets.all(8),
+                              title: Text(
+                                movies[index].title!,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
+                              ),
+                              subtitle: Text("${movies[index].releaseYear}"),
+                              trailing: Text("${movies[index].rating}"),
+                              leading: Image.network(movies[index].url!),
+                            )))
           ],
         ),
       ),
